@@ -1,5 +1,5 @@
 var Wallet = require('./index.js')
-var ethUtil = require('ethereumjs-util')
+var hucUtil = require('happyucjs-util')
 var crypto = require('crypto')
 var scryptsy = require('scrypt.js')
 var utf8 = require('utf8')
@@ -82,10 +82,10 @@ function decodeCryptojsSalt (input) {
 }
 
 /*
- * This wallet format is created by https://github.com/SilentCicero/ethereumjs-accounts
- * and used on https://www.myetherwallet.com/
+ * This wallet format is created by https://github.com/SilentCicero/happyucjs-accounts
+ * and used on https://www.myhucwallet.com/
  */
-Thirdparty.fromEtherWallet = function (input, password) {
+Thirdparty.fromHucWallet = function (input, password) {
   var json = (typeof input === 'object') ? input : JSON.parse(input)
 
   var privKey
@@ -111,7 +111,7 @@ Thirdparty.fromEtherWallet = function (input, password) {
     cipher = decodeCryptojsSalt(cipher)
 
     if (!cipher.salt) {
-      throw new Error('Unsupported EtherWallet key format')
+      throw new Error('Unsupported HucWallet key format')
     }
 
     // derive key/iv using OpenSSL EVP as implemented in CryptoJS
@@ -133,7 +133,7 @@ Thirdparty.fromEtherWallet = function (input, password) {
   return wallet
 }
 
-Thirdparty.fromEtherCamp = function (passphrase) {
+Thirdparty.fromHucCamp = function (passphrase) {
   return new Wallet(ethUtil.sha3(Buffer.from(passphrase)))
 }
 
@@ -176,13 +176,13 @@ Thirdparty.fromKryptoKit = function (entropy, password) {
 
   var privKey
   if (type === 'd') {
-    privKey = ethUtil.sha256(entropy)
+    privKey = hucUtil.sha256(entropy)
   } else if (type === 'q') {
     if (typeof password !== 'string') {
       throw new Error('Password required')
     }
 
-    var encryptedSeed = ethUtil.sha256(Buffer.from(entropy.slice(0, 30)))
+    var encryptedSeed = hucUtil.sha256(Buffer.from(entropy.slice(0, 30)))
     var checksum = entropy.slice(30, 46)
 
     var salt = kryptoKitBrokenScryptSeed(encryptedSeed)
@@ -210,7 +210,7 @@ Thirdparty.fromKryptoKit = function (entropy, password) {
     ])
 
     if (checksum.length > 0) {
-      if (checksum !== ethUtil.sha256(ethUtil.sha256(privKey)).slice(0, 8).toString('hex')) {
+      if (checksum !== hucUtil.sha256(ethUtil.sha256(privKey)).slice(0, 8).toString('hex')) {
         throw new Error('Failed to decrypt input - possibly invalid passphrase')
       }
     }

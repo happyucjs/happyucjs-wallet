@@ -1,5 +1,5 @@
 var Buffer = require('safe-buffer').Buffer
-var ethUtil = require('ethereumjs-util')
+var hucUtil = require('happyucjs-util')
 var crypto = require('crypto')
 var scryptsy = require('scrypt.js')
 var uuidv4 = require('uuid/v4')
@@ -42,7 +42,7 @@ Object.defineProperty(Wallet.prototype, 'privKey', {
 Object.defineProperty(Wallet.prototype, 'pubKey', {
   get: function () {
     if (!this._pubKey) {
-      this._pubKey = ethUtil.privateToPublic(this.privKey)
+      this._pubKey = hucUtil.privateToPublic(this.privKey)
     }
     return this._pubKey
   }
@@ -50,10 +50,10 @@ Object.defineProperty(Wallet.prototype, 'pubKey', {
 
 Wallet.generate = function (icapDirect) {
   if (icapDirect) {
-    var max = new ethUtil.BN('088f924eeceeda7fe92e1f5b0fffffffffffffff', 16)
+    var max = new hucUtil.BN('088f924eeceeda7fe92e1f5b0fffffffffffffff', 16)
     while (true) {
       var privKey = crypto.randomBytes(32)
-      if (new ethUtil.BN(ethUtil.privateToAddress(privKey)).lte(max)) {
+      if (new hucUtil.BN(ethUtil.privateToAddress(privKey)).lte(max)) {
         return new Wallet(privKey)
       }
     }
@@ -69,7 +69,7 @@ Wallet.generateVanityAddress = function (pattern) {
 
   while (true) {
     var privKey = crypto.randomBytes(32)
-    var address = ethUtil.privateToAddress(privKey)
+    var address = hucUtil.privateToAddress(privKey)
 
     if (pattern.test(address.toString('hex'))) {
       return new Wallet(privKey)
@@ -82,7 +82,7 @@ Wallet.prototype.getPrivateKey = function () {
 }
 
 Wallet.prototype.getPrivateKeyString = function () {
-  return ethUtil.bufferToHex(this.getPrivateKey())
+  return hucUtil.bufferToHex(this.getPrivateKey())
 }
 
 Wallet.prototype.getPublicKey = function () {
@@ -90,22 +90,22 @@ Wallet.prototype.getPublicKey = function () {
 }
 
 Wallet.prototype.getPublicKeyString = function () {
-  return ethUtil.bufferToHex(this.getPublicKey())
+  return hucUtil.bufferToHex(this.getPublicKey())
 }
 
 Wallet.prototype.getAddress = function () {
-  return ethUtil.publicToAddress(this.pubKey)
+  return hucUtil.publicToAddress(this.pubKey)
 }
 
 Wallet.prototype.getAddressString = function () {
-  return ethUtil.bufferToHex(this.getAddress())
+  return hucUtil.bufferToHex(this.getAddress())
 }
 
 Wallet.prototype.getChecksumAddressString = function () {
-  return ethUtil.toChecksumAddress(this.getAddressString())
+  return hucUtil.toChecksumAddress(this.getAddressString())
 }
 
-// https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition
+// https://github.com/happyuc-project/wiki/wiki/Webu-Secret-Storage-Definition
 Wallet.prototype.toV3 = function (password, opts) {
   assert(this._privKey, 'This is a public key only wallet')
 
@@ -141,7 +141,7 @@ Wallet.prototype.toV3 = function (password, opts) {
 
   var ciphertext = Buffer.concat([ cipher.update(this.privKey), cipher.final() ])
 
-  var mac = ethUtil.sha3(Buffer.concat([ derivedKey.slice(16, 32), Buffer.from(ciphertext, 'hex') ]))
+  var mac = hucUtil.sha3(Buffer.concat([ derivedKey.slice(16, 32), Buffer.from(ciphertext, 'hex') ]))
 
   return {
     version: 3,
@@ -188,7 +188,7 @@ Wallet.prototype.toV3String = function (password, opts) {
 
 Wallet.fromPublicKey = function (pub, nonStrict) {
   if (nonStrict) {
-    pub = ethUtil.importPublic(pub)
+    pub = hucUtil.importPublic(pub)
   }
   return new Wallet(null, pub)
 }
@@ -196,7 +196,7 @@ Wallet.fromPublicKey = function (pub, nonStrict) {
 Wallet.fromExtendedPublicKey = function (pub) {
   assert(pub.slice(0, 4) === 'xpub', 'Not an extended public key')
   pub = bs58check.decode(pub).slice(45)
-  // Convert to an Ethereum public key
+  // Convert to an HappyUC public key
   return Wallet.fromPublicKey(pub, true)
 }
 
@@ -211,7 +211,7 @@ Wallet.fromExtendedPrivateKey = function (priv) {
   return Wallet.fromPrivateKey(tmp.slice(46))
 }
 
-// https://github.com/ethereum/go-ethereum/wiki/Passphrase-protected-key-store-spec
+// https://github.com/happyuc-project/happyuc-go/wiki/Passphrase-protected-key-store-spec
 Wallet.fromV1 = function (input, password) {
   assert(typeof password === 'string')
   var json = (typeof input === 'object') ? input : JSON.parse(input)
@@ -229,13 +229,13 @@ Wallet.fromV1 = function (input, password) {
 
   var ciphertext = Buffer.from(json.Crypto.CipherText, 'hex')
 
-  var mac = ethUtil.sha3(Buffer.concat([ derivedKey.slice(16, 32), ciphertext ]))
+  var mac = hucUtil.sha3(Buffer.concat([ derivedKey.slice(16, 32), ciphertext ]))
 
   if (mac.toString('hex') !== json.Crypto.MAC) {
     throw new Error('Key derivation failed - possibly wrong passphrase')
   }
 
-  var decipher = crypto.createDecipheriv('aes-128-cbc', ethUtil.sha3(derivedKey.slice(0, 16)).slice(0, 16), Buffer.from(json.Crypto.IV, 'hex'))
+  var decipher = crypto.createDecipheriv('aes-128-cbc', hucUtil.sha3(derivedKey.slice(0, 16)).slice(0, 16), Buffer.from(json.Crypto.IV, 'hex'))
   var seed = decipherBuffer(decipher, ciphertext)
 
   return new Wallet(seed)
@@ -270,7 +270,7 @@ Wallet.fromV3 = function (input, password, nonStrict) {
 
   var ciphertext = Buffer.from(json.crypto.ciphertext, 'hex')
 
-  var mac = ethUtil.sha3(Buffer.concat([ derivedKey.slice(16, 32), ciphertext ]))
+  var mac = hucUtil.sha3(Buffer.concat([ derivedKey.slice(16, 32), ciphertext ]))
   if (mac.toString('hex') !== json.crypto.mac) {
     throw new Error('Key derivation failed - possibly wrong passphrase')
   }
@@ -282,10 +282,10 @@ Wallet.fromV3 = function (input, password, nonStrict) {
 }
 
 /*
- * Based on https://github.com/ethereum/pyethsaletool/blob/master/pyethsaletool.py
- * JSON fields: encseed, ethaddr, btcaddr, email
+ * Based on https://github.com/happyuc-project/pyethsaletool/blob/master/pyethsaletool.py
+ * JSON fields: encseed, hucaddr, btcaddr, email
  */
-Wallet.fromEthSale = function (input, password) {
+Wallet.fromHucSale = function (input, password) {
   assert(typeof password === 'string')
   var json = (typeof input === 'object') ? input : JSON.parse(input)
 
@@ -301,7 +301,7 @@ Wallet.fromEthSale = function (input, password) {
   var seed = decipherBuffer(decipher, encseed.slice(16))
 
   var wallet = new Wallet(ethUtil.sha3(seed))
-  if (wallet.getAddress().toString('hex') !== json.ethaddr) {
+  if (wallet.getAddress().toString('hex') !== json.hucaddr) {
     throw new Error('Decoded key mismatch - possibly wrong passphrase')
   }
   return wallet

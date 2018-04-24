@@ -1,7 +1,7 @@
 {
-  "name": "ethereumjs-wallet",
+  "name": "happyucjs-wallet",
   "version": "0.6.0",
-  "description": "Utilities for handling Ethereum keys",
+  "description": "Utilities for handling HappyUC keys",
   "main": "dist/index.js",
   "files": [
     "dist"
@@ -17,23 +17,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ethereumjs/ethereumjs-wallet.git"
+    "url": "https://github.com/happyucjs/happyucjs-wallet.git"
   },
   "keywords": [
-    "ethereum",
+    "happyuc",
     "wallets",
     "keys"
   ],
   "author": "Alex Beregszaszi <alex@rtfs.hu>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ethereumjs/ethereumjs-wallet/issues"
+    "url": "https://github.com/happyucjs/happyucjs-wallet/issues"
   },
-  "homepage": "https://github.com/ethereumjs/ethereumjs-wallet",
+  "homepage": "https://github.com/happyucjs/happyucjs-wallet",
   "dependencies": {
     "aes-js": "^3.1.0",
     "bs58check": "^2.1.1",
-    "ethereumjs-util": "^5.1.4",
+    "happyucjs-util": "^5.1.4",
     "hdkey": "^0.8.0",
     "safe-buffer": "^5.1.1",
     "scrypt.js": "^0.2.0",

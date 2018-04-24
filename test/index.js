@@ -2,7 +2,7 @@ var assert = require('assert')
 var Buffer = require('safe-buffer').Buffer
 var Wallet = require('../')
 var Thirdparty = require('../thirdparty.js')
-var ethUtil = require('ethereumjs-util')
+var hucUtil = require('happyucjs-util')
 
 var fixturekey = Buffer.from('efca4cdd31923b50f4214af5d2ae10e7ac45a5019e9431cc195482d707485378', 'hex')
 var fixturewallet = Wallet.fromPrivateKey(fixturekey)
@@ -104,10 +104,10 @@ describe('.generate()', function () {
     assert.equal(Wallet.generate().getPrivateKey().length, 32)
   })
   it('should generate an account compatible with ICAP Direct', function () {
-    var max = new ethUtil.BN('088f924eeceeda7fe92e1f5b0fffffffffffffff', 16)
+    var max = new hucUtil.BN('088f924eeceeda7fe92e1f5b0fffffffffffffff', 16)
     var wallet = Wallet.generate(true)
     assert.equal(wallet.getPrivateKey().length, 32)
-    assert.equal(new ethUtil.BN(wallet.getAddress()).lte(max), true)
+    assert.equal(new hucUtil.BN(wallet.getAddress()).lte(max), true)
   })
 })
 
@@ -189,31 +189,31 @@ describe('.fromV3()', function () {
   })
 })
 
-describe('.fromEthSale()', function () {
-  // Generated using https://github.com/ethereum/pyethsaletool/ [4afd19ad60cee8d09b645555180bc3a7c8a25b67]
-  var json = '{"encseed": "81ffdfaf2736310ce87df268b53169783e8420b98f3405fb9364b96ac0feebfb62f4cf31e0d25f1ded61f083514dd98c3ce1a14a24d7618fd513b6d97044725c7d2e08a7d9c2061f2c8a05af01f06755c252f04cab20fee2a4778130440a9344", "ethaddr": "22f8c5dd4a0a9d59d580667868df2da9592ab292", "email": "hello@ethereum.org", "btcaddr": "1DHW32MFwHxU2nk2SLAQq55eqFotT9jWcq"}'
+describe('.fromHucSale()', function () {
+  // Generated using https://github.com/happyuc-project/pyethsaletool/ [4afd19ad60cee8d09b645555180bc3a7c8a25b67]
+  var json = '{"encseed": "81ffdfaf2736310ce87df268b53169783e8420b98f3405fb9364b96ac0feebfb62f4cf31e0d25f1ded61f083514dd98c3ce1a14a24d7618fd513b6d97044725c7d2e08a7d9c2061f2c8a05af01f06755c252f04cab20fee2a4778130440a9344", "ethaddr": "22f8c5dd4a0a9d59d580667868df2da9592ab292", "email": "hello@happyuc.org", "btcaddr": "1DHW32MFwHxU2nk2SLAQq55eqFotT9jWcq"}'
   it('should work', function () {
-    var wallet = Wallet.fromEthSale(json, 'testtest')
+    var wallet = Wallet.fromHucSale(json, 'testtest')
     assert.equal(wallet.getAddressString(), '0x22f8c5dd4a0a9d59d580667868df2da9592ab292')
   })
 })
 
-describe('.fromEtherWallet()', function () {
+describe('.fromHucWallet()', function () {
   it('should work with unencrypted input', function () {
-    var etherWalletUnencrypted = '{"address":"0x9d6abd11d36cc20d4836c25967f1d9efe6b1a27c","encrypted":true,"locked":false,"hash":"b7a6621e8b125a17234d3e5c35522696a84134d98d07eab2479d020a8613c4bd","private":"a2c6222146ca2269086351fda9f8d2dfc8a50331e8a05f0f400c13653a521862","public":"2ed129b50b1a4dbbc53346bf711df6893265ad0c700fd11431b0bc3a66bd383a87b10ad835804a6cbe092e0375a0cc3524acf06b1ec7bb978bf25d2d6c35d120"}'
-    var wallet = Thirdparty.fromEtherWallet(etherWalletUnencrypted)
+    var hucWalletUnencrypted = '{"address":"0x9d6abd11d36cc20d4836c25967f1d9efe6b1a27c","encrypted":true,"locked":false,"hash":"b7a6621e8b125a17234d3e5c35522696a84134d98d07eab2479d020a8613c4bd","private":"a2c6222146ca2269086351fda9f8d2dfc8a50331e8a05f0f400c13653a521862","public":"2ed129b50b1a4dbbc53346bf711df6893265ad0c700fd11431b0bc3a66bd383a87b10ad835804a6cbe092e0375a0cc3524acf06b1ec7bb978bf25d2d6c35d120"}'
+    var wallet = Thirdparty.fromHucWallet(hucWalletUnencrypted)
     assert.equal(wallet.getAddressString(), '0x9d6abd11d36cc20d4836c25967f1d9efe6b1a27c')
   })
   it('should work with encrypted input', function () {
-    var etherWalletEncrypted = '{"address":"0x9d6abd11d36cc20d4836c25967f1d9efe6b1a27c","encrypted":true,"locked":true,"hash":"b7a6621e8b125a17234d3e5c35522696a84134d98d07eab2479d020a8613c4bd","private":"U2FsdGVkX1/hGPYlTZYGhzdwvtkoZfkeII4Ga4pSd/Ak373ORnwZE4nf/FFZZFcDTSH1X1+AmewadrW7dqvwr76QMYQVlihpPaFV307hWgKckkG0Mf/X4gJIQQbDPiKdcff9","public":"U2FsdGVkX1/awUDAekZQbEiXx2ct4ugXwgBllY0Hz+IwYkHiEhhxH+obu7AF7PCU2Vq5c0lpCzBUSvk2EvFyt46bw1OYIijw0iOr7fWMJEkz3bfN5mt9pYJIiPzN0gxM8u4mrmqLPUG2SkoZhWz4NOlqRUHZq7Ep6aWKz7KlEpzP9IrvDYwGubci4h+9wsspqtY1BdUJUN59EaWZSuOw1g=="}'
-    var wallet = Thirdparty.fromEtherWallet(etherWalletEncrypted, 'testtest')
+    var hucWalletEncrypted = '{"address":"0x9d6abd11d36cc20d4836c25967f1d9efe6b1a27c","encrypted":true,"locked":true,"hash":"b7a6621e8b125a17234d3e5c35522696a84134d98d07eab2479d020a8613c4bd","private":"U2FsdGVkX1/hGPYlTZYGhzdwvtkoZfkeII4Ga4pSd/Ak373ORnwZE4nf/FFZZFcDTSH1X1+AmewadrW7dqvwr76QMYQVlihpPaFV307hWgKckkG0Mf/X4gJIQQbDPiKdcff9","public":"U2FsdGVkX1/awUDAekZQbEiXx2ct4ugXwgBllY0Hz+IwYkHiEhhxH+obu7AF7PCU2Vq5c0lpCzBUSvk2EvFyt46bw1OYIijw0iOr7fWMJEkz3bfN5mt9pYJIiPzN0gxM8u4mrmqLPUG2SkoZhWz4NOlqRUHZq7Ep6aWKz7KlEpzP9IrvDYwGubci4h+9wsspqtY1BdUJUN59EaWZSuOw1g=="}'
+    var wallet = Thirdparty.fromHucWallet(hucWalletEncrypted, 'testtest')
     assert.equal(wallet.getAddressString(), '0x9d6abd11d36cc20d4836c25967f1d9efe6b1a27c')
   })
 })
 
-describe('.fromEtherCamp()', function () {
+describe('.fromHucCamp()', function () {
   it('should work with seed text', function () {
-    var wallet = Thirdparty.fromEtherCamp('ethercamp123')
+    var wallet = Thirdparty.fromHucCamp('huccamp123')
     assert.equal(wallet.getAddressString(), '0x182b6ca390224c455f11b6337d74119305014ed4')
   })
 })
@@ -231,7 +231,7 @@ describe('.fromKryptoKit()', function () {
 
 describe('.fromQuorumWallet()', function () {
   it('should work', function () {
-    var wallet = Thirdparty.fromQuorumWallet('testtesttest', 'ethereumjs-wallet')
+    var wallet = Thirdparty.fromQuorumWallet('testtesttest', 'happyucjs-wallet')
     assert.equal(wallet.getAddressString(), '0x1b86ccc22e8f137f204a41a23033541242a48815')
   })
 })
