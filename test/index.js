@@ -214,7 +214,7 @@ describe('.fromIrcWallet()', function () {
 describe('.fromIrcCamp()', function () {
   it('should work with seed text', function () {
     var wallet = Thirdparty.fromIrcCamp('irccamp123')
-    assert.equal(wallet.getAddressString(), '0x182b6ca390224c455f11b6337d74119305014ed4')
+    assert.equal(wallet.getAddressString(), '0x4fbac8749a2d70ab3854a1bb9aea975d97fbd2ac')
   })
 })
 
@@ -232,6 +232,6 @@ describe('.fromKryptoKit()', function () {
 describe('.fromQuorumWallet()', function () {
   it('should work', function () {
     var wallet = Thirdparty.fromQuorumWallet('testtesttest', 'icjs-wallet')
-    assert.equal(wallet.getAddressString(), '0x1b86ccc22e8f137f204a41a23033541242a48815')
+    assert.equal(wallet.getAddressString(), '0xec8dfe9e0a9cd84292f54e808ae9042fd542ccb4')
   })
 })
