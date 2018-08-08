@@ -1,5 +1,5 @@
 var Wallet = require('./index.js')
-var hucUtil = require('happyucjs-util')
+var ircUtil = require('icjs-util')
 var crypto = require('crypto')
 var scryptsy = require('scrypt.js')
 var utf8 = require('utf8')
@@ -13,7 +13,7 @@ function assert (val, msg) {
 }
 
 function decipherBuffer (decipher, data) {
-  return Buffer.concat([ decipher.update(data), decipher.final() ])
+  return Buffer.concat([decipher.update(data), decipher.final()])
 }
 
 var Thirdparty = {}
@@ -82,10 +82,10 @@ function decodeCryptojsSalt (input) {
 }
 
 /*
- * This wallet format is created by https://github.com/SilentCicero/happyucjs-accounts
- * and used on https://www.myhucwallet.com/
+ * This wallet format is created by https://github.com/SilentCicero/icjs-accounts
+ * and used on https://www.ircwallet.com/
  */
-Thirdparty.fromHucWallet = function (input, password) {
+Thirdparty.fromIrcWallet = function (input, password) {
   var json = (typeof input === 'object') ? input : JSON.parse(input)
 
   var privKey
@@ -115,7 +115,7 @@ Thirdparty.fromHucWallet = function (input, password) {
     }
 
     // derive key/iv using OpenSSL EVP as implemented in CryptoJS
-    var evp = evp_kdf(Buffer.from(password), cipher.salt, { keysize: 32, ivsize: 16 })
+    var evp = evp_kdf(Buffer.from(password), cipher.salt, {keysize: 32, ivsize: 16})
 
     var decipher = crypto.createDecipheriv('aes-256-cbc', evp.key, evp.iv)
     privKey = decipherBuffer(decipher, Buffer.from(cipher.ciphertext))
@@ -133,8 +133,8 @@ Thirdparty.fromHucWallet = function (input, password) {
   return wallet
 }
 
-Thirdparty.fromHucCamp = function (passphrase) {
-  return new Wallet(ethUtil.sha3(Buffer.from(passphrase)))
+Thirdparty.fromIrcCamp = function (passphrase) {
+  return new Wallet(ircUtil.sha3(Buffer.from(passphrase)))
 }
 
 Thirdparty.fromKryptoKit = function (entropy, password) {
@@ -176,13 +176,13 @@ Thirdparty.fromKryptoKit = function (entropy, password) {
 
   var privKey
   if (type === 'd') {
-    privKey = hucUtil.sha256(entropy)
+    privKey = ircUtil.sha256(entropy)
   } else if (type === 'q') {
     if (typeof password !== 'string') {
       throw new Error('Password required')
     }
 
-    var encryptedSeed = hucUtil.sha256(Buffer.from(entropy.slice(0, 30)))
+    var encryptedSeed = ircUtil.sha256(Buffer.from(entropy.slice(0, 30)))
     var checksum = entropy.slice(30, 46)
 
     var salt = kryptoKitBrokenScryptSeed(encryptedSeed)
@@ -210,7 +210,7 @@ Thirdparty.fromKryptoKit = function (entropy, password) {
     ])
 
     if (checksum.length > 0) {
-      if (checksum !== hucUtil.sha256(ethUtil.sha256(privKey)).slice(0, 8).toString('hex')) {
+      if (checksum !== ircUtil.sha256(ircUtil.sha256(privKey)).slice(0, 8).toString('hex')) {
         throw new Error('Failed to decrypt input - possibly invalid passphrase')
       }
     }
