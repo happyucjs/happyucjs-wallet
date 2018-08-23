@@ -31,6 +31,7 @@ IrChainHDKey.prototype.publicExtendedKey = function () {
   return this._hdkey.publicExtendedKey
 }
 
+/** @namespace this._hdkey.derive */
 IrChainHDKey.prototype.derivePath = function (path) {
   return fromHDKey(this._hdkey.derive(path))
 }
@@ -39,6 +40,8 @@ IrChainHDKey.prototype.deriveChild = function (index) {
   return fromHDKey(this._hdkey.deriveChild(index))
 }
 
+/** @namespace this._hdkey._privateKey */
+/** @namespace this._hdkey._publicKey */
 IrChainHDKey.prototype.getWallet = function () {
   if (this._hdkey._privateKey) {
     return Wallet.fromPrivateKey(this._hdkey._privateKey)

@@ -1,19 +1,20 @@
 {
   "name": "icjs-wallet",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Utilities for handling IrChain keys",
-  "main": "dist/index.js",
+  "main": "index.js",
   "files": [
-    "dist"
+    "/*.js",
+    "test/"
   ],
   "scripts": {
     "coverage": "istanbul cover _mocha",
-    "coveralls": "npm run coverage && coveralls <coverage/lcov.info",
+    "coveralls": "npm run build:dist && npm run coverage && coveralls <coverage/lcov.info",
     "lint": "standard",
     "prepublishOnly": "npm run lint && npm run test:build",
-    "test": "mocha ./test/*.js",
-    "test:build": "npm run build:dist && mocha ./dist/test/*.js",
-    "build:dist": "babel *.js test/*.js -d dist/"
+    "test": "mocha ./src/test/*.js",
+    "test:build": "npm run build:dist && mocha ./test/*.js",
+    "build:dist": "babel src/ -d ."
   },
   "repository": {
     "type": "git",
@@ -31,22 +32,22 @@
   },
   "homepage": "https://github.com/icjs/icjs-wallet",
   "dependencies": {
-    "aes-js": "^3.1.0",
-    "bs58check": "^2.1.1",
+    "aes-js": "^3.1.1",
+    "bs58check": "^2.1.2",
     "icjs-util": "^0.0.1",
-    "hdkey": "^0.8.0",
-    "safe-buffer": "^5.1.1",
+    "hdkey": "^1.1.0",
+    "safe-buffer": "^5.1.2",
     "scrypt.js": "^0.2.0",
     "utf8": "^3.0.0",
-    "uuid": "^3.2.1"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "coveralls": "^3.0.0",
     "istanbul": "^0.4.5",
-    "mocha": "^5.0.0",
-    "standard": "^11.0.1"
+    "mocha": "^5.2.0",
+    "standard": "^11.0.0"
   },
   "standard": {
     "globals": [
@@ -54,7 +55,7 @@
       "it"
     ],
     "ignore": [
-      "dist/**"
+      "./*.js"
     ]
   },
   "directories": {
